@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Ledger Playbook</title>
+  <style>
+    :root {
+      --ink: #151b22;
+      --muted: #5e6670;
+      --soft: #f3f5f6;
+      --soft-warm: #f6f1ea;
+      --line: #d9dee2;
+      --line-dark: #bcc4cb;
+      --accent: #e5622b;
+      --accent-soft: #fff1eb;
+      --paper: #fcfaf7;
+      --dark: #0f1720;
+      --dark-2: #172330;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    @page {
+      size: A4;
+      margin: 16mm 14mm 18mm 14mm;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #f1ede8;
+      font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .book {
+      width: 100%;
+      max-width: 794px;
+      margin: 0 auto;
+    }
+
+    .page {
+      page-break-after: always;
+      min-height: 263mm;
+      height: 263mm;
+      padding: 24px 18px 22px;
+      position: relative;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.78)),
+        linear-gradient(180deg, #fcfaf7 0%, #f7f3ed 100%);
+      border: 1px solid #e7dfd4;
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+    }
+
+    .page:not(.cover)::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 18px;
+      right: 18px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent) 0%, rgba(229, 98, 43, 0.18) 100%);
+    }
+
+    .cover {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0)),
+        linear-gradient(180deg, var(--dark) 0%, var(--dark-2) 100%);
+      color: #f5f3ee;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 34px 24px 26px;
+      border: none;
+    }
+
+    .cover-topline {
+      width: 92px;
+      height: 4px;
+      background: var(--accent);
+      margin-bottom: 18px;
+    }
+
+    .cover-kicker {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(245, 243, 238, 0.66);
+    }
+
+    .cover-title {
+      margin-top: 18px;
+      max-width: 640px;
+      font-size: 46px;
+      line-height: 1.08;
+      letter-spacing: -0.05em;
+      font-weight: 900;
+      word-break: keep-all;
+    }
+
+    .cover-subtitle {
+      margin-top: 18px;
+      max-width: 640px;
+      font-size: 21px;
+      line-height: 1.72;
+      color: rgba(245, 243, 238, 0.80);
+      word-break: keep-all;
+    }
+
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .cover-card {
+      border-top: 1px solid rgba(245, 243, 238, 0.18);
+      padding-top: 14px;
+    }
+
+    .cover-card-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(245, 243, 238, 0.46);
+      margin-bottom: 10px;
+    }
+
+    .cover-card-text {
+      font-size: 17px;
+      line-height: 1.6;
+      color: rgba(245, 243, 238, 0.92);
+      font-weight: 700;
+      word-break: keep-all;
+    }
+
+    .cover-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      color: rgba(245, 243, 238, 0.54);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .title-page .meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .meta-box {
+      border-top: 2px solid var(--accent);
+      background: var(--soft);
+      padding: 14px;
+      min-height: 100px;
+    }
+
+    .meta-label {
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .meta-value {
+      font-size: 17px;
+      line-height: 1.6;
+      font-weight: 700;
+      word-break: keep-all;
+    }
+
+    .section-kicker {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    h1, h2, h3, h4 {
+      margin: 0;
+      word-break: keep-all;
+    }
+
+    h1 {
+      font-family: "Iowan Old Style", "Palatino Linotype", "Times New Roman", "Apple SD Gothic Neo", serif;
+      font-size: 32px;
+      line-height: 1.18;
+      letter-spacing: -0.04em;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-family: "Iowan Old Style", "Palatino Linotype", "Times New Roman", "Apple SD Gothic Neo", serif;
+      font-size: 28px;
+      line-height: 1.24;
+      letter-spacing: -0.03em;
+      margin-bottom: 14px;
+    }
+
+    h3 {
+      font-size: 19px;
+      line-height: 1.4;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+
+    h4 {
+      font-size: 16px;
+      line-height: 1.45;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin: 0 0 11px;
+      font-size: 14px;
+      line-height: 1.82;
+      color: var(--ink);
+      word-break: keep-all;
+    }
+
+    code {
+      padding: 1px 4px;
+      background: rgba(15, 23, 32, 0.06);
+      border-radius: 3px;
+      font-family: Menlo, Monaco, "SFMono-Regular", monospace;
+      font-size: 0.92em;
+    }
+
+    .lead {
+      font-size: 17px;
+      line-height: 1.78;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .hr {
+      width: 100%;
+      height: 1px;
+      background: var(--line);
+      margin: 18px 0;
+    }
+
+    .toc-list,
+    .bullet-list,
+    .num-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .toc-list li,
+    .bullet-list li,
+    .num-list li {
+      margin-bottom: 8px;
+      font-size: 14px;
+      line-height: 1.75;
+      word-break: keep-all;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 14px 0 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 14px 0 18px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 14px;
+      min-height: 116px;
+    }
+
+    .card.soft {
+      background: var(--soft);
+    }
+
+    .card .label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .card .value {
+      font-size: 18px;
+      line-height: 1.55;
+      font-weight: 800;
+      word-break: keep-all;
+    }
+
+    .callout {
+      margin: 16px 0 18px;
+      padding: 16px 18px;
+      background: var(--soft);
+      border-left: 4px solid var(--accent);
+    }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px;
+    }
+
+    .chapter {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-dark);
+    }
+
+    .chapter:first-of-type {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    pre {
+      margin: 12px 0 16px;
+      padding: 14px;
+      overflow: auto;
+      background: #0f1720;
+      color: #f3f5f7;
+      border-radius: 4px;
+      font-size: 12px;
+      line-height: 1.72;
+      font-family: Menlo, Monaco, "SFMono-Regular", monospace;
+      white-space: pre-wrap;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px;
+    }
+
+    th, td {
+      border-top: 1px solid var(--line);
+      padding: 10px 8px;
+      vertical-align: top;
+      text-align: left;
+      font-size: 13px;
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+
+    th {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .small {
+      font-size: 12px;
+      line-height: 1.72;
+      color: var(--muted);
+    }
+
+    .footer-note {
+      position: absolute;
+      bottom: 18px;
+      left: 18px;
+      right: 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .part-page {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(180deg, #fbfaf8 0%, #f3efe8 100%);
+    }
+
+    .part-index {
+      font-size: 14px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .part-title {
+      max-width: 620px;
+      font-size: 38px;
+      line-height: 1.14;
+      letter-spacing: -0.04em;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    .part-desc {
+      max-width: 620px;
+      font-size: 18px;
+      line-height: 1.8;
+      color: var(--muted);
+    }
+
+    .page-number {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .quote-box {
+      margin: 16px 0 18px;
+      padding: 18px;
+      border-top: 2px solid var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .quote-box p {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.78;
+      font-weight: 700;
+    }
+
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .metric-item {
+      border-top: 1px solid rgba(245, 243, 238, 0.18);
+      padding-top: 12px;
+    }
+
+    .metric-item.light {
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+
+    .metric-number {
+      font-size: 26px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      line-height: 1.6;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(245, 243, 238, 0.54);
+      font-weight: 700;
+    }
+
+    .metric-item.light .metric-label {
+      color: var(--muted);
+    }
+
+    .editor-note {
+      margin-top: 16px;
+      padding: 14px 16px;
+      background: var(--soft-warm);
+      border: 1px solid #eadfce;
+    }
+
+    .editor-note strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <main class="book">
+    <section class="page cover">
+      <div>
+        <div class="cover-topline"></div>
+        <div class="cover-kicker">Human-readable, AI-executable</div>
+        <div class="cover-title">Agent Ledger Playbook</div>
+        <div class="cover-subtitle">
+          AI에게 일을 시킨 뒤, 나중에 다시 설명할 수 있게 만드는 저장 방법론.
+          사람이 읽으면 운영 철학이 보이고, AI에게 읽히면 실제 시스템이 세팅되도록 설계한 플레이북.
+        </div>
+        <div class="cover-grid">
+          <div class="cover-card">
+            <div class="cover-card-label">Backbone</div>
+            <div class="cover-card-text">Simon Willison의 공개 저장, 로그, 조회 워크플로를 실무 기준으로 번역</div>
+          </div>
+          <div class="cover-card">
+            <div class="cover-card-label">Frame</div>
+            <div class="cover-card-text">Hashimoto의 하네스 관점으로 반복 실수 방지와 운영 구조를 연결</div>
+          </div>
+          <div class="cover-card">
+            <div class="cover-card-label">Use</div>
+            <div class="cover-card-text">Codex와 Claude Code가 같은 저장 규칙으로 일하도록 만드는 실행 팩</div>
+          </div>
+        </div>
+        <div class="metric-strip">
+          <div class="metric-item">
+            <div class="metric-number">27</div>
+            <div class="metric-label">Editorial pages designed for human reading and AI ingestion</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-number">08</div>
+            <div class="metric-label">Execution pack documents that Codex or Claude Code can directly follow</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-number">05</div>
+            <div class="metric-label">Minimum fields every AI-assisted task should leave behind</div>
+          </div>
+        </div>
+      </div>
+      <div class="cover-footer">
+        <div>
+          Free distribution, paid-level density<br>
+          Version 1.0 · 2026-04-02
+        </div>
+        <div>
+          Good AI work starts with records, not memory.
+        </div>
+      </div>
+    </section>
+
+    <section class="page title-page">
+      <div class="page-number">Page 02</div>
+      <div class="section-kicker">Reader Note</div>
+      <h1>이 PDF는 사람이 읽는 설명서이면서, AI가 저장 시스템을 설계할 때 참고하는 상위 설계 문서입니다.</h1>
+      <p class="lead">
+        이 문서는 혼자 읽고 끝나는 전자책이 아니다. 사람이 읽으면 왜 기록이 필요한지 이해하게 만들고,
+        AI가 읽으면 어떤 정보를 저장하고 어떤 규칙으로 운영해야 하는지 구조를 잡게 만드는 문서다.
+      </p>
+      <div class="callout">
+        <strong>중요한 원칙</strong>
+        실행 규칙의 정본은 함께 배포되는 Markdown Pack이다. 이 PDF는 철학과 운영 구조의 정본이며,
+        실제 구현, 템플릿, 체크리스트는 Markdown Pack이 담당한다.
+      </div>
+      <div class="meta">
+        <div class="meta-box">
+          <div class="meta-label">Who This Is For</div>
+          <div class="meta-value">AI를 매일 쓰지만 기록이 남지 않는 개인 작업자, 팀 리더, 개발자, 운영자</div>
+        </div>
+        <div class="meta-box">
+          <div class="meta-label">What You Get</div>
+          <div class="meta-value">저장 항목 기준, 최소 로그 구조, Simon식 워크플로, Codex·Claude 적용법</div>
+        </div>
+        <div class="meta-box">
+          <div class="meta-label">What This Uses</div>
+          <div class="meta-value">Simon Willison의 공개 저장·로그·조회 워크플로를 중요한 실전 기준으로 사용</div>
+        </div>
+      </div>
+      <div class="metric-strip">
+        <div class="metric-item light">
+          <div class="metric-number">01</div>
+          <div class="metric-label">사람은 왜 기록이 필요한지 읽는다</div>
+        </div>
+        <div class="metric-item light">
+          <div class="metric-number">02</div>
+          <div class="metric-label">AI는 Markdown Pack을 읽고 저장 구조를 제안한다</div>
+        </div>
+        <div class="metric-item light">
+          <div class="metric-number">03</div>
+          <div class="metric-label">팀은 주간 review로 규칙을 업데이트한다</div>
+        </div>
+      </div>
+      <div class="hr"></div>
+      <p>
+        이 PDF의 목표는 하나다. AI를 잘 쓰는 방법을 말하는 것이 아니라, AI 작업이 나중에도 설명 가능한 상태로 남게 만드는 것이다.
+        결국 문제는 모델의 지능이 아니라 기록의 부재에서 시작하는 경우가 훨씬 많기 때문이다.
+      </p>
+      <div class="editor-note">
+        <strong>How To Use This Package</strong>
+        이 PDF로 개념과 기준을 이해한 뒤, 실제 적용은 <code>AGENTS.md</code>, <code>CLAUDE.md</code>, <code>pack/00~07</code>, <code>templates/*</code>를 프로젝트에 복사해 시작한다.
+      </div>
+      <div class="footer-note">
+        <span>Agent Ledger Playbook</span>
+        <span>사람은 PDF를 읽고, AI는 Markdown Pack으로 시스템을 설계한다.</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 03</div>
+      <div class="section-kicker">Table of Contents</div>
+      <h1>목차</h1>
+      <ol class="toc-list">
+        <li>왜 AI 작업은 기록이 필요해지는가</li>
+        <li>저장하지 않으면 생기는 7가지 문제</li>
+        <li>최소한 무엇을 저장해야 하는가</li>
+        <li>비개발자용 저장 방식</li>
+        <li>개발자용 저장 방식</li>
+        <li>가장 쉬운 시작법</li>
+        <li>Simon Willison은 어떻게 저장 시스템을 만들고 있나</li>
+        <li>Simon 방법론을 그대로 따라 할 때의 최소 구현</li>
+        <li>Mitchell Hashimoto 관점에서 보면 왜 이게 하네스 엔지니어링인가</li>
+        <li>팀에 적용하는 순서</li>
+        <li>Codex에 적용하는 법</li>
+        <li>Claude Code에 적용하는 법</li>
+        <li>AI에게 이 패키지를 읽히는 프롬프트</li>
+        <li>무엇을 저장하면 안 되는가</li>
+        <li>로그를 남기되 위험하지 않게 만드는 법</li>
+        <li>바로 쓰는 템플릿</li>
+        <li>첫 7일 실행 플랜</li>
+      </ol>
+      <div class="quote-box">
+        <p>
+          이 플레이북의 가치는 정보량에 있지 않다. 무엇을 남기고, 무엇을 남기지 말아야 하며, 그 기록을 어떻게 다시 쓰게 만들지를 압축해서 담았다는 점에 있다.
+        </p>
+      </div>
+      <div class="footer-note">
+        <span>Table of Contents</span>
+        <span>다음 페이지부터는 Why - What - How - Execution - Guardrails - Assets 순서로 진행된다.</span>
+      </div>
+    </section>
+
+    <section class="page part-page">
+      <div class="page-number">Page 04</div>
+      <div class="part-index">Part 1</div>
+      <div class="part-title">Why: 왜 AI 작업은 기억이 아니라 기록으로 남아야 하는가</div>
+      <div class="part-desc">
+        좋은 AI 사용은 좋은 답변에서 끝나지 않는다. 어떤 지시를 했고, 어떤 응답이 왔고, 어떤 도구가 돌았고, 누가 실행했는지가 남아 있어야 다음 품질이 올라간다.
+      </div>
+      <div class="footer-note">
+        <span>Part 1</span>
+        <span>Why</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 05</div>
+      <div class="section-kicker">Chapter 1</div>
+      <h1>왜 AI 작업은 기록이 필요해지는가</h1>
+      <p class="lead">
+        AI는 대화창에서 쓸 때 가장 편하다. 문제는 편한 만큼 흔적이 약하다는 점이다. 좋은 결과만 복사해 가면 작업의 이유와 과정은 사라진다.
+      </p>
+      <div class="chapter">
+        <h3>좋은 답변은 남지만, 좋은 작업은 남지 않는다</h3>
+        <p>
+          대부분의 사용자는 AI를 "그때그때 답해주는 도구"로 쓴다. 그래서 최종 결과만 저장하고, 그 결과가 어떻게 나왔는지는 저장하지 않는다.
+          그런데 실제 업무에서는 최종 결과보다 과정이 더 중요할 때가 많다.
+        </p>
+        <p>
+          예를 들어, 글 초안이 이상하게 나왔을 때 원인을 찾으려면 최소한 아래를 다시 볼 수 있어야 한다.
+        </p>
+        <ul class="bullet-list">
+          <li>내가 정확히 무엇을 요청했는가</li>
+          <li>AI가 어떤 식으로 해석했는가</li>
+          <li>중간에 어떤 도구나 검색을 사용했는가</li>
+          <li>어떤 모델을 썼는가</li>
+          <li>누가 그 작업을 실행했는가</li>
+        </ul>
+      </div>
+      <div class="chapter">
+        <h3>설명 가능한 작업이 결국 더 강하다</h3>
+        <p>
+          AI 사용은 점점 더 많은 조직에서 일상 업무가 되고 있다. 이때 중요한 것은 "한 번 잘 나온 결과"보다
+          "왜 이런 결과가 나왔는지 다시 설명할 수 있는 작업"이다. 설명 가능해야 수정이 가능하고, 수정 가능해야 팀의 품질이 올라간다.
+        </p>
+      </div>
+      <div class="callout">
+        <strong>핵심 문장</strong>
+        AI에게 일을 시켰다면, 결과만 남기지 말고 무슨 일이 일어났는지 나중에 다시 볼 수 있게 만들어라.
+      </div>
+      <div class="footer-note">
+        <span>Chapter 1</span>
+        <span>기억에 의존하는 AI 사용은 실력보다 우연에 가까워진다.</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 06</div>
+      <div class="section-kicker">Chapter 2</div>
+      <h1>저장하지 않으면 생기는 7가지 문제</h1>
+      <div class="grid-2">
+        <div class="card">
+          <div class="label">Problem 01</div>
+          <div class="value">같은 실수를 반복한다</div>
+          <p>이전 실패가 어떻게 만들어졌는지 모르기 때문에, 비슷한 작업에서 같은 오류가 다시 난다.</p>
+        </div>
+        <div class="card">
+          <div class="label">Problem 02</div>
+          <div class="value">좋은 프롬프트가 자산이 안 된다</div>
+          <p>잘 먹힌 요청을 다시 재사용하지 못한다. 결국 성과가 개인 기억에만 남는다.</p>
+        </div>
+        <div class="card">
+          <div class="label">Problem 03</div>
+          <div class="value">결과 품질을 비교할 수 없다</div>
+          <p>어떤 모델, 어떤 지시, 어떤 도구 조합이 좋았는지 비교할 수 없다.</p>
+        </div>
+        <div class="card">
+          <div class="label">Problem 04</div>
+          <div class="value">비용이 새는 지점을 모른다</div>
+          <p>무슨 작업에 어떤 모델을 얼마나 썼는지 모르면 최적화가 불가능하다.</p>
+        </div>
+        <div class="card">
+          <div class="label">Problem 05</div>
+          <div class="value">팀 학습이 누락된다</div>
+          <p>개인이 깨달은 좋은 사용법이 팀 규칙으로 번역되지 않는다.</p>
+        </div>
+        <div class="card">
+          <div class="label">Problem 06</div>
+          <div class="value">책임 소재가 흐려진다</div>
+          <p>누가 실행했는지, 누가 승인했는지 남지 않으면 운영이 취약해진다.</p>
+        </div>
+      </div>
+      <div class="card soft">
+        <div class="label">Problem 07</div>
+        <div class="value">보안 사고를 알기 늦어진다</div>
+        <p>반대로 아무 기준 없이 전부 저장하면 민감정보 사고가 날 수 있다. 그래서 저장 시스템은 기록성과 안전성을 함께 가져야 한다.</p>
+      </div>
+      <div class="footer-note">
+        <span>Chapter 2</span>
+        <span>기록이 없으면 학습이 누적되지 않고, 기록이 무질서하면 보안이 깨진다.</span>
+      </div>
+    </section>
+
+    <section class="page part-page">
+      <div class="page-number">Page 07</div>
+      <div class="part-index">Part 2</div>
+      <div class="part-title">What: 최소한 무엇을 저장해야 하는가</div>
+      <div class="part-desc">
+        복잡한 시스템을 만들기 전에, 먼저 어떤 항목이 최소 필수인지부터 정해야 한다. 이 기준이 없으면 로그는 쌓여도 운영은 되지 않는다.
+      </div>
+      <div class="footer-note">
+        <span>Part 2</span>
+        <span>What</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 08</div>
+      <div class="section-kicker">Chapter 3</div>
+      <h1>최소한 무엇을 저장해야 하는가</h1>
+      <p class="lead">
+        처음부터 다 저장할 필요는 없다. 하지만 너무 적게 저장하면 나중에 원인을 다시 볼 수 없다. 이 플레이북은 최소 필수 5가지를 제안한다.
+      </p>
+      <div class="grid-3">
+        <div class="card">
+          <div class="label">Required 01</div>
+          <div class="value">Prompt</div>
+          <p>내가 뭐라고 시켰는지. 나중에 결과가 이상할 때 가장 먼저 다시 봐야 하는 항목이다.</p>
+        </div>
+        <div class="card">
+          <div class="label">Required 02</div>
+          <div class="value">Response</div>
+          <p>AI가 뭐라고 답했는지. 결과뿐 아니라 판단 흐름의 흔적이다.</p>
+        </div>
+        <div class="card">
+          <div class="label">Required 03</div>
+          <div class="value">Tools</div>
+          <p>중간에 검색, 파일 읽기, 테스트 실행 같은 도구를 썼는지.</p>
+        </div>
+        <div class="card">
+          <div class="label">Required 04</div>
+          <div class="value">Actor</div>
+          <p>누가 실행했는지. 개인 작업자라면 자신, 팀이라면 정확한 주체를 남긴다.</p>
+        </div>
+        <div class="card">
+          <div class="label">Required 05</div>
+          <div class="value">Model</div>
+          <p>어떤 모델을 썼는지. 품질 비교와 비용 추적을 위해 필수다.</p>
+        </div>
+        <div class="card soft">
+          <div class="label">Recommended</div>
+          <div class="value">Timestamp, Next Action, Artifact, Approval</div>
+          <p>시간, 다음 액션, 결과 파일, 승인 여부까지 남기면 운영 품질이 훨씬 좋아진다.</p>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>실무 기준</strong>
+        최소 저장 기준은 "뭘 시켰나, 뭐가 나왔나, 중간에 뭘 했나, 누가 실행했나, 어떤 모델이었나"의 다섯 질문에 답할 수 있어야 한다.
+      </div>
+      <div class="footer-note">
+        <span>Chapter 3</span>
+        <span>이 다섯 가지가 쌓이면 그것이 개인 또는 팀의 AI 작업 자산이 된다.</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 09</div>
+      <div class="section-kicker">Chapter 4</div>
+      <h1>비개발자용 저장 방식</h1>
+      <p class="lead">
+        비개발자라고 해서 저장 시스템을 못 만드는 것은 아니다. 오히려 가장 좋은 시작은 복잡한 도구가 아니라 가볍게 계속 남기는 방식이다.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>방법</th>
+            <th>좋은 점</th>
+            <th>한계</th>
+            <th>언제 적합한가</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>메모장</td>
+            <td>오늘 바로 시작 가능</td>
+            <td>검색과 구조화가 약함</td>
+            <td>개인 실험 초기</td>
+          </tr>
+          <tr>
+            <td>Markdown work log</td>
+            <td>가볍고 버전 관리 가능</td>
+            <td>분석 자동화는 약함</td>
+            <td>개인 작업자, 크리에이터</td>
+          </tr>
+          <tr>
+            <td>스프레드시트</td>
+            <td>필드별 비교와 정렬이 쉬움</td>
+            <td>긴 프롬프트/응답 관리가 번거로움</td>
+            <td>운영자, PM, 비개발 팀</td>
+          </tr>
+          <tr>
+            <td>노션 테이블</td>
+            <td>협업과 설명이 쉬움</td>
+            <td>정교한 구조화에는 한계</td>
+            <td>팀 위키와 같이 쓰는 경우</td>
+          </tr>
+        </tbody>
+      </table>
+      <pre>## 2026-04-02 15:20
+- task: Simon 4월 글 Threads 초안
+- actor: inabe
+- model: gpt-5
+- prompt: 사이먼 4월 글을 쉽게 설명해줘
+- response: 운영, 추적, 권한 중심으로 정리
+- tools: web_search
+- next_action: 게시용 최종 다듬기</pre>
+      <div class="footer-note">
+        <span>Chapter 4</span>
+        <span>복잡한 도구보다, 계속 남기는 습관이 먼저다.</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 10</div>
+      <div class="section-kicker">Chapter 5</div>
+      <h1>개발자용 저장 방식</h1>
+      <p class="lead">
+        개발자는 파일 기반 로그에서 시작해도 좋지만, 곧 구조화된 저장과 조회의 필요를 느끼게 된다. 이때 중요한 것은 멋진 시스템보다 단계적으로 올리는 것이다.
+      </p>
+      <div class="chapter">
+        <h3>JSON은 자동화 가능한 최소 구조다</h3>
+        <p>
+          Markdown이 사람에게 좋다면 JSON은 도구에 좋다. CLI, 자동화 스크립트, 후속 분석, 대시보드 연결이 쉬워진다.
+        </p>
+        <pre>{
+  "timestamp": "2026-04-02T15:00:00",
+  "task": "summarize_simon_april_posts",
+  "actor": "inabe",
+  "model": "gpt-5",
+  "prompt": "Simon 4월 글 핵심 정리",
+  "response": "운영, 추적, 권한 중심",
+  "tools": ["web_search"],
+  "next_action": "write_threads_draft"
+}</pre>
+      </div>
+      <div class="chapter">
+        <h3>SQLite는 "다시 보기"를 가능하게 한다</h3>
+        <p>
+          JSON이 기록이라면 SQLite는 조회다. 작업별, 모델별, 사람별, 실패 패턴별로 다시 묻고 비교하려면 결국 queryable storage가 필요해진다.
+        </p>
+        <p>
+          바로 이 지점에서 Simon Willison의 방식이 강해진다. 그는 대화창을 저장하는 데서 멈추지 않고, 저장된 것을 다시 조회하고, plugin으로 usage와 actor까지 구조화한다.
+        </p>
+      </div>
+      <div class="footer-note">
+        <span>Chapter 5</span>
+        <span>개발자에게 중요한 건 저장 형식보다 조회 가능한 구조다.</span>
+      </div>
+    </section>
+
+    <section class="page part-page">
+      <div class="page-number">Page 11</div>
+      <div class="part-index">Part 3</div>
+      <div class="part-title">How: Simon의 공개 워크플로를 실무에 어떻게 옮길 것인가</div>
+      <div class="part-desc">
+        이 파트의 목적은 영감을 주는 것이 아니다. 공개적으로 확인 가능한 Simon의 저장 구조를 복제 가능한 단계로 바꾸는 것이다.
+      </div>
+      <div class="footer-note">
+        <span>Part 3</span>
+        <span>How</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 12</div>
+      <div class="section-kicker">Chapter 6</div>
+      <h1>가장 쉬운 시작법</h1>
+      <p class="lead">
+        대부분의 사람은 시작부터 너무 큰 시스템을 만들려고 한다. 그러면 아무것도 남기지 못한다. 이 플레이북은 가장 쉬운 5줄 로그부터 시작할 것을 권한다.
+      </p>
+      <ol class="num-list">
+        <li>작업 이름을 쓴다</li>
+        <li>프롬프트를 적는다</li>
+        <li>응답을 적는다</li>
+        <li>도구와 모델을 적는다</li>
+        <li>다음 액션을 적는다</li>
+      </ol>
+      <div class="callout">
+        <strong>좋은 시작의 기준</strong>
+        가장 쉬운 시스템이 가장 좋은 시스템이다. 나중에 SQLite로 갈 수 있더라도, 오늘은 Markdown 파일 하나로 시작해도 충분하다.
+      </div>
+      <div class="footer-note">
+        <span>Chapter 6</span>
+        <span>최소 로그가 없는 사람은 고급 로그도 운영하지 못한다.</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 13</div>
+      <div class="section-kicker">Chapter 7</div>
+      <h1>Simon Willison은 어떻게 저장 시스템을 만들고 있나</h1>
+      <p class="lead">
+        이 장은 "사이먼이 대단하다"를 말하는 장이 아니다. 공개된 글과 릴리스에서 실제로 확인되는 저장 워크플로를 추려서, 우리가 복제 가능한 구조로 읽는 장이다.
+      </p>
+      <div class="chapter">
+        <h3>1. LLM 실행을 대화창에서 끝내지 않는다</h3>
+        <p>
+          Simon의 <code>llm</code> 도구는 prompt와 response를 SQLite에 저장하는 방향을 택한다. 출발점부터 "채팅한 뒤 잊어버리는 사용법"이 아니라 "실행과 결과를 데이터로 남기는 사용법"이다.
+        </p>
+      </div>
+      <div class="chapter">
+        <h3>2. 저장한 뒤 다시 조회한다</h3>
+        <p>
+          저장은 끝이 아니다. Simon은 저장된 SQLite를 Datasette로 다시 열어 보는 흐름을 제시한다.
+          이 구조는 중요하다. 로그가 있어도 다시 보기 어렵다면 학습으로 이어지지 않기 때문이다.
+        </p>
+      </div>
+      <div class="chapter">
+        <h3>3. 2026년 4월에는 저장 범위를 더 넓혔다</h3>
+        <p>
+          4월 1일 공개 릴리스에서는 tool call loops, prompts/responses/tool calls logging, actor, allowed/default model, usage 기록 같은 항목이 반복해서 보인다.
+          즉, 단순 대화 저장에서 운영 로그 저장으로 계속 확장하고 있다.
+        </p>
+      </div>
+      <div class="callout">
+        <strong>Simon의 공개 워크플로를 한 줄로 줄이면</strong>
+        LLM 실행 → SQLite에 저장 → Datasette로 조회 → plugin으로 usage, tool calls, actor, model policy를 점점 더 구조화
+      </div>
+      <div class="footer-note">
+        <span>Chapter 7</span>
+        <span>Simon은 "더 똑똑한 모델"보다 "더 관리 가능한 AI 시스템"에 가까운 방향을 보여준다.</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 14</div>
+      <div class="section-kicker">Chapter 8</div>
+      <h1>Simon 방법론을 그대로 따라 할 때의 최소 구현</h1>
+      <div class="grid-2">
+        <div class="card">
+          <div class="label">Level 1</div>
+          <div class="value">파일 로그 버전</div>
+          <p>작업마다 Markdown 블록을 쌓는다. 비개발자와 개인 작업자에게 가장 좋은 시작점이다.</p>
+        </div>
+        <div class="card">
+          <div class="label">Level 2</div>
+          <div class="value">JSON 버전</div>
+          <p>자동화와 구조화가 필요하면 JSON으로 옮긴다. 나중에 DB로 가기 쉬워진다.</p>
+        </div>
+        <div class="card">
+          <div class="label">Level 3</div>
+          <div class="value">SQLite 버전</div>
+          <p>모델별, 사람별, 작업별로 다시 묻고 비교해야 할 때 올린다.</p>
+        </div>
+        <div class="card">
+          <div class="label">Level 4</div>
+          <div class="value">조회 화면</div>
+          <p>저장만 하지 않고 다시 보는 화면을 붙인다. 그래야 운영과 리뷰가 가능해진다.</p>
+        </div>
+      </div>
+      <p>
+        이 플레이북이 Simon을 적극 활용하는 이유는 여기에 있다. Simon은 저장을 "기록 습관"으로만 보지 않고,
+        저장과 조회를 하나의 운영 루프로 만든다. 이 점이 실무적으로 매우 강하다.
+      </p>
+      <div class="footer-note">
+        <span>Chapter 8</span>
+        <span>가장 중요한 것은 복잡한 시스템이 아니라 점진적 확장 가능성이다.</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 15</div>
+      <div class="section-kicker">Chapter 9</div>
+      <h1>Mitchell Hashimoto 관점에서 보면 왜 이게 하네스 엔지니어링인가</h1>
+      <p class="lead">
+        Simon이 보여주는 것은 저장과 조회의 구조다. Mitchell Hashimoto의 언어로 바꾸면, 이것은 결국 에이전트가 같은 실수를 반복하지 않게 만드는 하네스의 일부다.
+      </p>
+      <div class="chapter">
+        <h3>기록은 반복 실수를 줄이기 위한 전제다</h3>
+        <p>
+          기록이 없으면 같은 실수를 다시 보지 못하고, 다시 보지 못하면 규칙으로 바꾸지 못한다.
+          Hashimoto가 강조하는 하네스는 결국 이런 반복 실수 방지 구조와 맞닿아 있다.
+        </p>
+      </div>
+      <div class="chapter">
+        <h3>AGENTS.md와 로그는 서로 연결된다</h3>
+        <p>
+          AGENTS.md는 "앞으로 어떻게 일할 것인가"를 정의하고, 로그는 "실제로 어떻게 일했는가"를 남긴다.
+          이 둘이 분리되면 규칙은 이상적 선언으로 남고, 연결되면 실제 운영 기준이 된다.
+        </p>
+      </div>
+      <div class="footer-note">
+        <span>Chapter 9</span>
+        <span>좋은 하네스는 지시문만이 아니라, 그 지시가 현실에서 어떻게 작동했는지의 기록까지 포함한다.</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 16</div>
+      <div class="section-kicker">Chapter 10</div>
+      <h1>팀에 적용하는 순서</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>단계</th>
+            <th>무엇을 한다</th>
+            <th>왜 필요한가</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1. 개인 로그</td>
+            <td>최소 5개 필드로 기록 시작</td>
+            <td>기록 습관을 먼저 만든다</td>
+          </tr>
+          <tr>
+            <td>2. 공용 규칙</td>
+            <td>팀이 공통 필드를 정의</td>
+            <td>비교 가능한 데이터가 생긴다</td>
+          </tr>
+          <tr>
+            <td>3. 승인 지점</td>
+            <td>어디서 사람이 승인하는지 명시</td>
+            <td>운영 책임이 분명해진다</td>
+          </tr>
+          <tr>
+            <td>4. 민감정보 정책</td>
+            <td>무엇을 저장 금지할지 정함</td>
+            <td>보안 사고를 줄인다</td>
+          </tr>
+          <tr>
+            <td>5. 주간 리뷰</td>
+            <td>반복 오류와 유용한 패턴 추출</td>
+            <td>팀의 하네스가 진화한다</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="footer-note">
+        <span>Chapter 10</span>
+        <span>팀 적용의 핵심은 도구보다 공용 규칙과 리뷰 루프다.</span>
+      </div>
+    </section>
+
+    <section class="page part-page">
+      <div class="page-number">Page 17</div>
+      <div class="part-index">Part 4</div>
+      <div class="part-title">Execution: Codex와 Claude Code에 실제로 적용하는 법</div>
+      <div class="part-desc">
+        이 파트에서는 패키지를 AI에게 어떻게 읽히고, 실제 프로젝트에서 어떻게 세팅하게 만들지 다룬다.
+      </div>
+      <div class="footer-note">
+        <span>Part 4</span>
+        <span>Execution</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 18</div>
+      <div class="section-kicker">Chapter 11</div>
+      <h1>Codex에 이 방법론을 적용하는 법</h1>
+      <p class="lead">
+        Codex에서는 AGENTS.md가 핵심이다. 패키지 루트의 AGENTS.md는 무엇을 저장하고 어떤 순서로 읽어야 하는지 상위 규칙을 정의한다.
+      </p>
+      <ol class="num-list">
+        <li>프로젝트 루트에 AGENTS.md를 둔다</li>
+        <li>AI가 먼저 읽을 pack 파일 순서를 정한다</li>
+        <li>work-log 템플릿이나 JSON 템플릿을 연결한다</li>
+        <li>작업마다 최소 5개 필드를 남기도록 지시한다</li>
+      </ol>
+      <pre>이 폴더의 AGENTS.md와 pack 문서를 기준으로
+내 프로젝트용 AI 작업 로그 시스템을 설계해줘.
+
+조건:
+- Simon Willison의 공개 워크플로를 핵심 기준으로 삼을 것
+- 최소 저장 항목은 prompt, response, tools, actor, model
+- 처음에는 work-log.md에 append하는 가장 쉬운 구조로 시작할 것</pre>
+      <div class="footer-note">
+        <span>Chapter 11</span>
+        <span>Codex에서는 상위 규칙이 먼저이고, 템플릿은 그 다음이다.</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 19</div>
+      <div class="section-kicker">Chapter 12</div>
+      <h1>Claude Code에 이 방법론을 적용하는 법</h1>
+      <p class="lead">
+        Claude Code에서는 CLAUDE.md가 같은 역할을 한다. 중요한 것은 파일 이름이 아니라, AI가 읽는 우선순위와 저장 규칙이 일관되게 유지되는 것이다.
+      </p>
+      <ul class="bullet-list">
+        <li>CLAUDE.md에서 최소 저장 기준을 분명히 한다</li>
+        <li>SIMON_METHOD_REFERENCE.md를 함께 읽게 한다</li>
+        <li>pack/00~03을 기준으로 실제 로그 구조를 제안하게 한다</li>
+        <li>민감정보는 local-only와 redaction을 우선 제안하게 한다</li>
+      </ul>
+      <div class="callout">
+        <strong>핵심 원칙</strong>
+        Codex와 Claude Code가 다른 UI를 가질 수는 있어도, 저장 기준과 검토 기준은 같아야 한다.
+      </div>
+      <div class="footer-note">
+        <span>Chapter 12</span>
+        <span>좋은 패키지는 모델을 바꿔도 운영 기준이 흔들리지 않는다.</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 20</div>
+      <div class="section-kicker">Chapter 13</div>
+      <h1>AI에게 이 패키지를 읽히는 프롬프트</h1>
+      <p class="lead">
+        이 플레이북은 사람이 읽고 이해하는 동시에, AI에게 읽혀서 실제 저장 시스템을 만들게 하는 것을 목표로 한다. 아래 프롬프트는 그 목적에 맞춰 설계됐다.
+      </p>
+      <div class="editor-note">
+        <strong>Best Input Order</strong>
+        가장 안정적인 방식은 <code>PLAYBOOK.pdf</code>로 개념을 먼저 읽히고, 이어서 <code>pack/00_AI_INGESTION_NOTE.md</code>, <code>pack/01_SIMON_METHOD.md</code>, <code>pack/03_STORAGE_SCHEMA.md</code>, <code>pack/07_PROJECT_BOOTSTRAP_PROMPTS.md</code> 순서로 주는 것이다.
+      </div>
+      <pre>이 폴더의 PLAYBOOK과 Markdown Pack을 읽고
+내 프로젝트용 AI 작업 로그 시스템을 설계해줘.
+
+요구사항:
+- Simon Willison의 공개 워크플로를 적극 반영
+- 최소 필수 항목: prompt, response, tools, actor, model
+- 민감정보는 저장하지 않거나 마스킹
+- 처음에는 Markdown 또는 JSON으로 시작
+- 필요하면 SQLite로 확장할 수 있는 경로 제안
+- 사람도 이해할 수 있는 설명 포함</pre>
+      <pre>이 프로젝트는 비개발자와 개발자가 함께 사용한다.
+가장 쉬운 저장 구조부터 제안하고,
+7일 안에 운영이 시작될 수 있는 최소 실행 플랜을 만들어줘.</pre>
+      <div class="footer-note">
+        <span>Chapter 13</span>
+        <span>좋은 AI 입력은 결과 지시가 아니라 운영 조건까지 함께 준다.</span>
+      </div>
+    </section>
+
+    <section class="page part-page">
+      <div class="page-number">Page 21</div>
+      <div class="part-index">Part 5</div>
+      <div class="part-title">Guardrails: 무엇을 저장하지 말아야 하는가</div>
+      <div class="part-desc">
+        저장은 강력하지만, 무조건 다 저장하면 위험하다. 좋은 저장 시스템은 기록성과 안전성을 함께 갖는다.
+      </div>
+      <div class="footer-note">
+        <span>Part 5</span>
+        <span>Guardrails</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 22</div>
+      <div class="section-kicker">Chapter 14</div>
+      <h1>무엇을 저장하면 안 되는가</h1>
+      <div class="grid-2">
+        <div class="card">
+          <div class="label">Do Not Store</div>
+          <div class="value">시크릿, 토큰, 비밀번호</div>
+          <p>가장 기본이다. 자동 저장 시스템에 들어가면 안 되는 1순위다.</p>
+        </div>
+        <div class="card">
+          <div class="label">Do Not Store</div>
+          <div class="value">고객 원문 민감정보</div>
+          <p>필요하면 요약본 또는 마스킹된 형태만 남긴다.</p>
+        </div>
+        <div class="card">
+          <div class="label">Do Not Store</div>
+          <div class="value">내부 비공개 자산 전체</div>
+          <p>필요한 필드만 추려 저장해야 한다.</p>
+        </div>
+        <div class="card">
+          <div class="label">Do Not Store</div>
+          <div class="value">민감정보가 섞인 전체 프롬프트</div>
+          <p>가능하면 요약 또는 redacted prompt를 사용한다.</p>
+        </div>
+      </div>
+      <div class="footer-note">
+        <span>Chapter 14</span>
+        <span>저장은 많을수록 좋은 것이 아니라, 다시 볼 가치가 있는 것만 안전하게 남기는 것이 중요하다.</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 23</div>
+      <div class="section-kicker">Chapter 15</div>
+      <h1>로그를 남기되 위험하지 않게 만드는 법</h1>
+      <ul class="bullet-list">
+        <li>기본은 local-first로 시작한다</li>
+        <li>민감정보는 저장 전 redaction을 먼저 고려한다</li>
+        <li>프로젝트별 저장 위치를 분리한다</li>
+        <li>내보내기 전에는 사람이 한 번 검토한다</li>
+        <li>모든 로그를 중앙 서버로 자동 전송하는 구조는 신중하게 검토한다</li>
+      </ul>
+      <div class="callout">
+        <strong>좋은 기본값</strong>
+        처음에는 내 컴퓨터 안의 파일이나 SQLite로 시작하고, 나중에 정말 필요할 때만 공유 스토리지나 협업 도구로 확장하는 편이 안전하다.
+      </div>
+      <div class="footer-note">
+        <span>Chapter 15</span>
+        <span>좋은 로그 시스템은 많이 남기는 시스템이 아니라 사고를 줄이는 시스템이다.</span>
+      </div>
+    </section>
+
+    <section class="page part-page">
+      <div class="page-number">Page 24</div>
+      <div class="part-index">Part 6</div>
+      <div class="part-title">Assets: 바로 쓰는 템플릿과 7일 실행 플랜</div>
+      <div class="part-desc">
+        이 마지막 파트는 바로 적용을 돕기 위한 실전 자산이다. 여기서 멈추지 말고, 실제 파일을 복사해 프로젝트에서 써야 한다.
+      </div>
+      <div class="footer-note">
+        <span>Part 6</span>
+        <span>Assets</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 25</div>
+      <div class="section-kicker">Chapter 16</div>
+      <h1>바로 쓰는 템플릿</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>용도</th>
+            <th>언제 먼저 쓸까</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>work-log.md</td>
+            <td>가장 쉬운 작업 기록</td>
+            <td>오늘 바로 시작할 때</td>
+          </tr>
+          <tr>
+            <td>ai-task.json</td>
+            <td>구조화된 작업 로그</td>
+            <td>자동화나 반복 작업이 늘 때</td>
+          </tr>
+          <tr>
+            <td>weekly-review.md</td>
+            <td>실패 패턴과 규칙 업데이트</td>
+            <td>일주일에 한 번 review 할 때</td>
+          </tr>
+          <tr>
+            <td>research-note.md</td>
+            <td>날짜와 팩트 중심 리서치 기록</td>
+            <td>딥리서치와 Threads 준비 시</td>
+          </tr>
+          <tr>
+            <td>team-policy.md</td>
+            <td>팀 공용 저장 규칙</td>
+            <td>여러 사람이 같은 AI 규칙을 써야 할 때</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>1. work-log.md</h3>
+      <pre>## {{timestamp}}
+- task:
+- actor:
+- model:
+- prompt:
+- response:
+- tools:
+- next_action:
+- artifact:</pre>
+      <h3>2. ai-task.json</h3>
+      <pre>{
+  "timestamp": "",
+  "task": "",
+  "actor": "",
+  "model": "",
+  "prompt": "",
+  "response": "",
+  "tools": [],
+  "next_action": "",
+  "artifact": ""
+}</pre>
+      <h3>3. weekly-review.md</h3>
+      <pre># Weekly Review Template
+
+## Week Of
+- period:
+
+## Most Repeated Tasks
+- 
+
+## Most Frequent Failure Patterns
+- 
+
+## What To Change Next Week
+- </pre>
+      <h3>4. research-note.md / team-policy.md</h3>
+      <pre>## Topic
+- 
+
+## Exact Date
+- 
+
+## Previous Way
+- 
+
+## Actual Change
+- </pre>
+      <div class="footer-note">
+        <span>Chapter 16</span>
+        <span>가장 좋은 템플릿은 지금 바로 복사해서 쓸 수 있는 템플릿이다.</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 26</div>
+      <div class="section-kicker">Chapter 17</div>
+      <h1>첫 7일 실행 플랜</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>실행</th>
+            <th>목표</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Day 1</td>
+            <td>work-log 시작</td>
+            <td>기록 습관 만들기</td>
+          </tr>
+          <tr>
+            <td>Day 2</td>
+            <td>model 기록</td>
+            <td>품질과 비용 비교 기반 만들기</td>
+          </tr>
+          <tr>
+            <td>Day 3</td>
+            <td>tool 기록</td>
+            <td>중간 행동 로그 확보</td>
+          </tr>
+          <tr>
+            <td>Day 4</td>
+            <td>actor 기록</td>
+            <td>실행 주체 분명히 하기</td>
+          </tr>
+          <tr>
+            <td>Day 5</td>
+            <td>next_action 기록</td>
+            <td>로그가 다음 작업으로 이어지게 만들기</td>
+          </tr>
+          <tr>
+            <td>Day 6</td>
+            <td>weekly review 초안</td>
+            <td>반복 오류 찾기</td>
+          </tr>
+          <tr>
+            <td>Day 7</td>
+            <td>AI에게 시스템 설계 맡기기</td>
+            <td>Markdown -> JSON/SQLite 확장 경로 만들기</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <strong>7일 뒤의 목표</strong>
+        완벽한 시스템이 아니라, 최소한 "무슨 일을 시켰고, 어떤 결과가 나왔고, 누가 무엇을 했는지" 다시 볼 수 있는 상태를 만드는 것이다.
+      </div>
+      <div class="footer-note">
+        <span>Chapter 17</span>
+        <span>실행 플랜의 목적은 큰 시스템이 아니라 시작 가능한 시스템이다.</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-number">Page 27</div>
+      <div class="section-kicker">Appendix A</div>
+      <h1>사람용 요약</h1>
+      <p class="lead">
+        이 플레이북을 한 문장으로 요약하면 이렇다. AI를 잘 쓰는 사람은 기억이 좋은 사람이 아니라, 기록을 남기는 사람이다.
+      </p>
+      <ul class="bullet-list">
+        <li>최소 저장 항목은 prompt, response, tools, actor, model이다</li>
+        <li>Simon Willison의 공개 워크플로는 저장과 조회를 함께 보게 만든다</li>
+        <li>Hashimoto의 하네스 관점은 반복 실수 방지 구조로 이어진다</li>
+        <li>처음에는 Markdown 파일 하나로 시작해도 충분하다</li>
+        <li>민감정보는 기본적으로 저장하지 않거나 마스킹해야 한다</li>
+      </ul>
+      <div class="hr"></div>
+      <div class="section-kicker">Appendix B</div>
+      <h2>AI Ingestion Note</h2>
+      <p>
+        이 PDF는 상위 설계 문서다. 실제 규칙과 템플릿은 Markdown Pack을 기준으로 한다.
+        AI는 이 문서를 읽은 뒤 Simon Method, Capture Rules, Storage Schema, Workflow Setup, Review And Feedback, Privacy Redaction, Bootstrap Prompts를 우선 읽고 시스템을 제안해야 한다.
+      </p>
+      <div class="hr"></div>
+      <div class="section-kicker">Appendix C</div>
+      <h2>비개발자와 개발자의 시작 경로</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>사용자</th>
+            <th>먼저 열 파일</th>
+            <th>추천 템플릿</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>비개발자</td>
+            <td>`PLAYBOOK.pdf` → `templates/work-log.md` → `examples/nondev-ops-example.md`</td>
+            <td>`work-log.md`, `weekly-review.md`</td>
+          </tr>
+          <tr>
+            <td>개발자</td>
+            <td>`PLAYBOOK.pdf` → `AGENTS.md` 또는 `CLAUDE.md` → `pack/03_STORAGE_SCHEMA.md`</td>
+            <td>`ai-task.json`, `weekly-review.md`</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="hr"></div>
+      <div class="section-kicker">Appendix D</div>
+      <h2>Sources And License</h2>
+      <p>
+        이 패키지의 Simon 관련 설명은 아래 1차 출처를 기준으로 작성했다.
+      </p>
+      <ul class="bullet-list">
+        <li><code>llm</code> repository: https://github.com/simonw/llm</li>
+        <li><code>Language models on the command-line</code> handout: https://github.com/simonw/language-models-on-the-command-line</li>
+        <li>Simon Willison April 2026 archive: https://simonwillison.net/2026/Apr/</li>
+      </ul>
+      <p>
+        이 패키지는 <code>MIT License</code>로 무료 공개된다. 사용, 복사, 수정, 배포가 가능하며, 재배포 시 라이선스 고지를 함께 포함하면 된다.
+      </p>
+      <div class="hr"></div>
+      <div class="section-kicker">Appendix E</div>
+      <h2>Changelog</h2>
+      <p>v1.0 (2026-04-02): Initial public playbook body with Simon-first architecture and Codex/Claude execution guidance.</p>
+      <div class="footer-note">
+        <span>Appendix</span>
+        <span>이 문서는 사람이 이해하고, AI가 시스템을 만들게 하기 위한 상위 설계 문서다.</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
